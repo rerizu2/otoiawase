@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>オンラインChat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #chatContainer {
+            width: 350px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        #messages {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            background: #fff;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 8px 12px;
+            border-radius: 10px;
+            max-width: 80%;
+            word-wrap: break-word;
+            position: relative;
+        }
+        .sent {
+            background-color: #dcf8c6;
+            text-align: right;
+            align-self: flex-end;
+        }
+        .received {
+            background-color: #f1f1f1;
+            text-align: left;
+            align-self: flex-start;
+        }
+        .delete-btn {
+            position: absolute;
+            top: 50%;
+            right: -20px;
+            transform: translateY(-50%);
+            background: red;
+            color: white;
+            border: none;
+            padding: 2px 5px;
+            font-size: 12px;
+            cursor: pointer;
+            display: none;
+        }
+        .sent:hover .delete-btn {
+            display: inline;
+        }
+        form {
+            display: flex;
+            margin-top: 10px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 8px 15px;
+            margin-left: 5px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div id="chatContainer">
+        <h2>オンラインChatルーム</h2>
+        <div id="messages"></div>
+        <form id="chatForm">
+            <input type="text" id="username" placeholder="名前を入力" required>
+            <input type="text" id="message" name="message" placeholder="メッセージを入力" required>
+            <button type="submit">送信</button>
+        </form>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const room = urlParams.get("room") || "default";
+        const userId = localStorage.getItem("userId") || Date.now().toString();
+        localStorage.setItem("userId", userId);
+        const messagesDiv = document.getElementById("messages");
+
+        document.getElementById("chatForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const username = document.getElementById("username").value;
+            const message = document.getElementById("message").value;
+            const chatData = { message, username, room, timestamp: Date.now(), userId };
+            localStorage.setItem(`chat_${room}_${chatData.timestamp}`, JSON.stringify(chatData));
+            document.getElementById("message").value = "";
+            displayMessages();
+        });
+
+        function displayMessages() {
+            messagesDiv.innerHTML = "";
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith(`chat_${room}_`)) {
+                    const chatData = JSON.parse(localStorage.getItem(key));
+                    const messageElement = document.createElement("div");
+                    messageElement.className = "message " + (chatData.userId === userId ? "sent" : "received");
+                    messageElement.innerHTML = `<strong>${chatData.username || "匿名"}:</strong> ${chatData.message}`;
+                    
+                    if (chatData.userId === userId) {
+                        const deleteButton = document.createElement("button");
+                        deleteButton.textContent = "×";
+                        deleteButton.className = "delete-btn";
+                        deleteButton.onclick = function() {
+                            localStorage.removeItem(key);
+                            displayMessages();
+                        };
+                        messageElement.appendChild(deleteButton);
+                    }
+                    
+                    messagesDiv.appendChild(messageElement);
+                }
+            });
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        displayMessages();
+    </script>
+</body>
+</html>
