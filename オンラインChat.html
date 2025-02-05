@@ -15,41 +15,48 @@
             margin: 0;
         }
         #chatContainer {
-            width: 350px;
+            width: 400px;
             background: white;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             padding: 15px;
+            display: flex;
+            flex-direction: column;
         }
         h2 {
             text-align: center;
             margin-bottom: 10px;
         }
         #messages {
+            flex-grow: 1;
             height: 300px;
             overflow-y: auto;
             border: 1px solid #ccc;
             padding: 10px;
             border-radius: 5px;
             background: #fff;
+            display: flex;
+            flex-direction: column;
         }
         .message {
-            margin: 10px 0;
+            margin: 5px 0;
             padding: 8px 12px;
             border-radius: 10px;
-            max-width: 80%;
+            max-width: 100%;
             word-wrap: break-word;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
         .sent {
             background-color: #dcf8c6;
-            text-align: right;
             align-self: flex-end;
+            text-align: right;
         }
         .received {
             background-color: #f1f1f1;
-            text-align: left;
             align-self: flex-start;
+            text-align: left;
         }
         .delete-btn {
             position: absolute;
@@ -69,17 +76,17 @@
         }
         form {
             display: flex;
+            flex-direction: column;
             margin-top: 10px;
         }
         input[type="text"] {
-            flex: 1;
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            margin-bottom: 5px;
         }
         button {
             padding: 8px 15px;
-            margin-left: 5px;
             border: none;
             background-color: #28a745;
             color: white;
